@@ -4,7 +4,7 @@
    - Estáticos (CSS/JS/imagenes): cache-first -> más rápido
    ========================================================= */
 
-const CACHE_NAME = "noemi-magic-v4"; // ← súbelo (v3, v4…) cuando despliegues cambios
+const CACHE_NAME = "noemi-magic-v4.1"; // ← súbelo (v3, v4…) cuando despliegues cambios
 const ASSETS = [
   "/",                     // raíz
   "/index.html",
