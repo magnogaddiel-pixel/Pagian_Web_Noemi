@@ -15,7 +15,7 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
    1) Emojis de amor al tocar/clic
    ========================================================= */
 (function heartBursts() {
-  const EMOJIS = ["💖", "💘", "💝", "💗", "💓", "💕"];
+  const EMOJIS = ["💖", "💘", "💝", "💗", "💓", "💕","🥰", "😍"];
 
   function spawnHeart(x, y) {
     const el = document.createElement("div");
