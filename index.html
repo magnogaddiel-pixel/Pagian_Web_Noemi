@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Para mi amor Noemí — Primer Mes</title>
+  <meta name="theme-color" content="#ff5bb0" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="bg-neon"></div>
+
+  <header class="wrap hero" id="top">
+    <h1 class="script">Gaddiel Y  Noemí</h1>
+    <p class="tag">Un mes, y mil razones para amarte</p>
+    <div class="cta">
+      <button class="btn primary" id="btn-play">Reproducir nuestra canción</button>
+      <a href="#galeria" class="btn ghost">Ver recuerdos</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card" id="galeria">
+      <h2>Nuestros recuerdos</h2>
+      <div class="gallery">
+        <button id="prev" class="btn icon" aria-label="Anterior">‹</button>
+        <img id="foto" alt="Recuerdo" />
+        <button id="next" class="btn icon" aria-label="Siguiente">›</button>
+      </div>
+      <p id="caption" class="caption"></p>
+      <div class="thumbs" id="thumbs"></div>
+    </section>
+
+    <section class="card" id="carta">
+      <h2>Carta para ti</h2>
+      <p>Feliz primer mes, mi Noemí. Este sitio es un abrazo digital con sorpresas, risas y promesas.</p>
+      <p>Gracias por cada momento compartido, por tu amor y por ser tú.</p>
+      <p>Te amo más de lo que las palabras pueden expresar. Seguir juntos hasta el final mi amor.</p>
+      <p>Con todo mi amor, <br> Gaddiel</p>
+      <div class="actions">
+        <button id="btn-revelar" class="btn">Revelar un secreto</button>
+        <button id="btn-voz" class="btn ghost">Leer en voz alta</button>
+      </div>
+    </section>
+
+    <section class="card" id="juego">
+      <h2>Adivinanzas de amor</h2>
+      <div id="quiz"></div>
+    </section>
+
+    <section class="card" id="musica">
+      <h2>Nuestra canción</h2>
+      <audio id="player" preload="none" controls>
+        <source src="assets/amor_2.mp3" type="audio/mpeg">
+      </audio>
+    </section>
+
+    <section class="card" id="instalar">
+      <h2>Instálalo como app</h2>
+      <button id="btn-instalar" class="btn">Instalar</button>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <small>Hecho por Gaddiel para ti mi amor Noemí — <span id="anio"></span></small>
+  </footer>
+
+  <script src="/script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ff5bb0"/><stop offset="1" stop-color="#8b7dff"/></linearGradient></defs>
+  <rect width="800" height="450" fill="#0c0a1a"/>
+  <g transform="translate(400,225)"><path d="M0 120 C-120 40 -160 -40 -100 -90 C-60 -120 0 -100 0 -60 C0 -100 60 -120 100 -90 C160 -40 120 40 0 120Z" fill="url(#g)" stroke="#fff" stroke-opacity=".1" stroke-width="4"/></g>
+  <text x="400" y="420" text-anchor="middle" font-family="Poppins, Arial" font-size="20" fill="#bdb8d4">Agrega tus fotos a /Fotos_Noemi</text>
+</svg>

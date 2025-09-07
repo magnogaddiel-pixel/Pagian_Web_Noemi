@@ -1,0 +1,207 @@
+/* =========================================================
+   Gaddiel ❤️ Noemí — Estilos base (limpios y comentados)
+   ========================================================= */
+
+/* ---------- Variables de tema ---------- */
+:root {
+  --bg: #0c0a1a;
+  --ink: #f7f7ff;
+  --muted: #bdb8d4;
+  --card: #ffffff0f;
+  --stroke: #ffffff1c;
+  --accent: #ff5bb0;
+  --accent2: #8b7dff;
+
+  /* Controla cómo se ajusta la foto del carrusel:
+     cover = llena y recorta un poco (recomendado)
+     contain = nunca recorta (puede dejar barras) */
+  --fit: cover;
+}
+
+/* ---------- Reset mínimo ---------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Poppins, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+/* ---------- Fondo neón animado ---------- */
+.bg-neon {
+  position: fixed;
+  inset: -20vmax;
+  pointer-events: none;
+  z-index: -2;
+  background:
+    radial-gradient(closest-corner at 20% 20%, #ff5bb044, transparent 60%),
+    radial-gradient(closest-corner at 85% 10%, #8b7dff44, transparent 60%),
+    radial-gradient(closest-corner at 60% 80%, #ffa45b44, transparent 60%);
+  filter: blur(40px);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(3vw, -2vh); }
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem 1.2rem;
+}
+
+.hero {
+  padding-top: 5rem;
+  text-align: center;
+}
+
+/* ---------- Tipografías y títulos ---------- */
+.script {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 1;
+  margin: .2rem 0;
+  text-shadow: 0 0 30px #ff5bb055;
+}
+
+h2 {
+  margin: .3rem 0 1rem;
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
+}
+
+.tag {
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: .2rem 0 1.2rem;
+}
+
+/* ---------- Tarjetas ---------- */
+.card {
+  backdrop-filter: blur(12px);
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 1.2rem;
+  margin: 1rem 0;
+  box-shadow: 0 8px 30px #00000055;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  border: 1px solid #ffffff44;
+  background: #ffffff1a;
+  color: var(--ink);
+  padding: .65rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform .06s ease, background .2s ease;
+}
+.btn:hover   { transform: translateY(-1px); background: #ffffff24; }
+.btn:active  { transform: translateY( 0 ); }
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn.icon   { font-size: 1.6rem; padding: .4rem .8rem; }
+.btn.primary{
+  border: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 8px 25px #00000055;
+}
+
+/* ---------- Galería ---------- */
+.gallery {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: .75rem;
+  align-items: center;
+}
+
+.gallery img {
+  width: 100%;
+  height: min(62vh, 520px);
+  object-fit: var(--fit);      /* cover o contain según variable */
+  background: #000000;         /* útil cuando --fit: contain */
+  border-radius: 16px;
+  border: 1px solid #ffffff22;
+  box-shadow: 0 6px 20px #0000003a;
+}
+
+/* Miniaturas (thumbnails) */
+.thumbs {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  margin-top: .6rem;
+}
+.thumbs img {
+  width: 88px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+  opacity: .7;
+  border: 1px solid #ffffff22;
+  cursor: pointer;
+}
+.thumbs img.active {
+  opacity: 1;
+  outline: 2px solid var(--accent);
+}
+
+/* ---------- Acciones ---------- */
+.actions {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-top: .6rem;
+}
+
+/* ---------- Footer ---------- */
+.foot {
+  text-align: center;
+  opacity: .8;
+  padding-bottom: 3rem;
+}
+
+/* ---------- Canvas de efectos ---------- */
+#fx {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ---------- Toasts (mensajes flotantes) ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 10vh;
+  transform: translateX(-50%);
+  background: #1b1530ee;
+  color: #fff;
+  padding: .6rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ffffff22;
+  box-shadow: 0 10px 30px #00000077;
+}
+
+/* ---------- Responsivo extra ---------- */
+@media (max-width: 480px) {
+  .gallery img { height: 52vh; }   /* un poco más bajo en móviles muy pequeños */
+  .thumbs img  { width: 76px; height: 52px; }
+}
+
+/* =========================================================
+   Opcional: cambia el ajuste de foto sin tocar CSS
+   - En JS o en el HTML, añade: document.body.dataset.fit = 'contain';
+   - CSS escucha data-fit para forzar el modo
+   ========================================================= */
+body[data-fit="contain"] .gallery img { object-fit: contain; }
+body[data-fit="cover"]   .gallery img { object-fit: cover; }
