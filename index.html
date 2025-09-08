@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Para mi amor Noemí — Primer Mes</title>
   <meta name="theme-color" content="#ff5bb0" />
+  <meta name="description" content="Un primer mes lleno de sorpresas para Noemí: recuerdos, juegos, música y mucho amor.">
   <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/assets/icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -29,7 +31,7 @@
       <h2>Nuestros recuerdos</h2>
       <div class="gallery">
         <button id="prev" class="btn icon" aria-label="Anterior">‹</button>
-        <img id="foto" alt="Recuerdo" />
+        <img id="foto" alt="Foto de nuestros recuerdos" />
         <button id="next" class="btn icon" aria-label="Siguiente">›</button>
       </div>
       <p id="caption" class="caption"></p>
@@ -70,6 +72,15 @@
     <small>Hecho por Gaddiel para ti mi amor Noemí — <span id="anio"></span></small>
   </footer>
 
+  <!-- Scripts -->
   <script src="/script.js" defer></script>
+  <script>
+    // registrar el service worker (sw.js)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js")
+        .then(() => console.log("SW registrado ✅"))
+        .catch(err => console.error("Error en SW:", err));
+    }
+  </script>
 </body>
 </html>

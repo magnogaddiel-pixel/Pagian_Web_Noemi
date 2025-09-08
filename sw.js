@@ -1,86 +1,69 @@
 /* =========================================================
-   Service Worker — Gaddiel ❤️ Noemí (sw.js)
-   - HTML (navegación): network-first  -> mejor frescura
-   - Estáticos (CSS/JS/imagenes): cache-first -> más rápido
+   Service Worker — Gaddiel ❤️ Noemí
+   Controla qué se guarda para funcionar offline
    ========================================================= */
 
-const CACHE_NAME = "noemi-magic-v4.2"; // ← súbelo (v3, v4…) cuando despliegues cambios
+const CACHE_NAME = "noemi-magic-v4.3"; // ⚡ Nueva versión
+
 const ASSETS = [
-  "/",                     // raíz
+  "/",                        // raíz
   "/index.html",
   "/style.css",
   "/script.js",
   "/manifest.webmanifest",
+  "/sw.js",
+
+  // 🎵 Música
+  "/assets/amor_2.mp3",
+  "/assets/amor_4.mp3",
+
+  // 🌸 Hero
+  "/Fotos_Noemi/Noemi_3.jpg",
+
+  // 🖼️ Íconos
+  "/assets/icon-192.png",
+  "/assets/icon-512.png",
   "/assets/placeholder.svg",
-   // 👇 NUEVOS archivos de Flores Amarillas
+
+  // 📸 Fotos
+  "/Fotos_Noemi/Noemi_1.jpg",
+  "/Fotos_Noemi/Noemi_2.jpg",
+  "/Fotos_Noemi/Noemi_3.jpg",
+  "/Fotos_Noemi/Noemi_4.jpg",
+
+  // 🌼 Nueva página Flores Amarillas
   "/flores/index.html",
   "/flores/style.css",
-  "/flores/script.js"
+  "/flores/script.js",
 ];
 
-/* ---------------------------
-   Install: precache de assets
-   --------------------------- */
+/* ---------- Install: precache ---------- */
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  // Toma control sin esperar a cerrar SW anterior
-  self.skipWaiting();
 });
 
-/* ---------------------------------------
-   Activate: limpieza de caches antiguos
-   --------------------------------------- */
+/* ---------- Activate: limpia versiones viejas ---------- */
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     )
   );
-  // Reclama clientes abiertos (pestañas) inmediatamente
-  self.clients.claim();
 });
 
-/* ---------------------------------------
-   Estrategias de respuesta
-   --------------------------------------- */
-
-// Navegación / HTML: intenta red primero, cae a caché
-async function networkFirst(request) {
-  try {
-    const fresh = await fetch(request);
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, fresh.clone());
-    return fresh;
-  } catch (err) {
-    const cached = await caches.match(request);
-    return cached || caches.match("/index.html");
-  }
-}
-
-// Estáticos: sirve caché si existe; si no, baja y guarda
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-
-  const fresh = await fetch(request);
-  const cache = await caches.open(CACHE_NAME);
-  cache.put(request, fresh.clone());
-  return fresh;
-}
-
-/* ---------------------------------------
-   Fetch: enruta según tipo de petición
-   --------------------------------------- */
+/* ---------- Fetch: primero red, si no cache ---------- */
 self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  if (request.method !== "GET") return;
+  if (event.request.method !== "GET") return;
 
-  // Detecta navegaciones/HTML (SPA friendly)
-  const accepts = request.headers.get("accept") || "";
-  const isHTML =
-    request.mode === "navigate" || accepts.includes("text/html");
-
-  event.respondWith(isHTML ? networkFirst(request) : cacheFirst(request));
+  event.respondWith(
+    fetch(event.request)
+      .then((res) => {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(event.request).then((res) => res || caches.match("/index.html")))
+  );
 });
