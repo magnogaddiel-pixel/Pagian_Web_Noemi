@@ -147,14 +147,20 @@ h2 {
 }
 
 /* ---------- Galería ---------- */
-.gallery {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: .75rem;
-  align-items: center;
+.gallery{ position: relative; }                 /* contenedor de referencia */
+.gallery > .btn.icon{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;                                  /* sobre la foto */
+  width: 42px; height: 42px;                   /* mejor objetivo táctil */
+  display: grid; place-items: center;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
 }
 
 .gallery img {
+  display: block;        /* quita espacio abajo */
   width: 100%;
   height: min(62vh, 520px);
   object-fit: var(--fit);      /* cover o contain según variable */

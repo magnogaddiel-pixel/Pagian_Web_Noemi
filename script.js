@@ -40,15 +40,15 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
     ).onfinish = () => el.remove();
   }
 
-  document.addEventListener("click", (e) => spawnHeart(e.clientX, e.clientY));
-  document.addEventListener(
-    "touchstart",
-    (e) => {
-      const t = e.touches[0];
-      if (t) spawnHeart(t.clientX, t.clientY);
-    },
-    { passive: true }
-  );
+// i = índice actual; montar(k) cambia la foto
+document.getElementById("prev")?.addEventListener("click", () => montar(i - 1));
+document.getElementById("next")?.addEventListener("click", () => montar(i + 1));
+
+// bonus: flechas del teclado
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft")  montar(i - 1);
+  if (e.key === "ArrowRight") montar(i + 1);
+});
 })();
 
 /* =========================================================
