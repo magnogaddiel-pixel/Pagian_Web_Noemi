@@ -1,21 +1,53 @@
 {
-  "name": "Para Noemí con Amor",
-  "short_name": "Noemí 💖",
-  "start_url": "/index.html",
+  "id": "/",
+  "name": "Para Noemí — Un mes con amor",
+  "short_name": "Para Noemí",
+  "description": "Un primer mes lleno de sorpresas: recuerdos, juegos, música y mucho amor. Hecho por Gaddiel para Noemí.",
+  "lang": "es",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0c0a1a",
-  "theme_color": "#ff5bb0",
+  "display_override": ["standalone"],
   "orientation": "portrait",
+  "theme_color": "#ff5bb0",
+  "background_color": "#0c0a1a",
+
   "icons": [
     {
-      "src": "assets/icon-192.jpg",
+      "src": "/assets/icon-192.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
-      "src": "assets/icon-512.jpg",
+      "src": "/assets/icon-512.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
     }
-  ]
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Ver recuerdos",
+      "short_name": "Recuerdos",
+      "url": "/#galeria",
+      "description": "Ir a la galería principal"
+    },
+    {
+      "name": "Flores Amarillas",
+      "short_name": "Flores",
+      "url": "/flores/",
+      "description": "Ir a la sorpresa del mes"
+    }
+  ],
+
+  "categories": ["lifestyle", "entertainment", "utilities"],
+  "prefer_related_applications": false
 }
