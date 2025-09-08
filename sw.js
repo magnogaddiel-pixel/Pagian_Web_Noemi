@@ -10,11 +10,10 @@
 
 const RUNTIME_CACHE = "noemi-runtime-v1";
 const OFFLINE_URLS = [
-  "/",                 // raíz
-  "/index.html",       // home offline
-  "/flores/index.html" // subpágina offline (si existe)
+  "./",                 // raíz (el punto es clave)
+  "index.html",       // home offline
+  "flores/index.html" // subpágina offline (si existe)
 ];
-
 /* ---------- Install: precache mínimo ---------- */
 self.addEventListener("install", (event) => {
   event.waitUntil(
