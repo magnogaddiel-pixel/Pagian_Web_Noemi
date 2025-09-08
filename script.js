@@ -213,7 +213,6 @@ async function loadFromJson() {
 
 // 3) Mostrar la foto seleccionada
 function mount(i) {
-function mount(i) {
   current = (i + photos.length) % photos.length;
   const src = photos[current].src;
   imgEl.src = `${src}${src.includes("?") ? "&" : "?"}v=${Date.now()}`; // bust cache
