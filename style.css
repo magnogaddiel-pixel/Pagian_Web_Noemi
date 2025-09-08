@@ -3,252 +3,188 @@
    ========================================================= */
 
 /* ---------- Variables de tema ---------- */
-:root {
-  --bg: #0c0a1a;
-  --ink: #f7f7ff;
-  --muted: #bdb8d4;
-  --card: #ffffff0f;
-  --stroke: #ffffff1c;
-  --accent: #ff5bb0;
-  --accent2: #8b7dff;
+:root{
+  --bg:#0c0a1a;
+  --ink:#f7f7ff;
+  --muted:#bdb8d4;
+  --card:#ffffff0f;
+  --stroke:#ffffff1c;
+  --accent:#ff5bb0;
+  --accent2:#8b7dff;
 
-  /* Controla cómo se ajusta la foto del carrusel:
-     cover = llena y recorta un poco (recomendado)
-     contain = nunca recorta (puede dejar barras) */
-  --fit: cover;
+  /* Carrusel */
+  --fit:cover;           /* cover | contain */
+  --radius:20px;
+
+  /* Motion */
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --t-fast: .12s;
+  --t-slow: .25s;
 }
 
 /* ---------- Reset mínimo ---------- */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  font-family: Poppins, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: var(--ink);
-  background: var(--bg);
-  overflow-x: hidden;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+  overflow-x:hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ---------- Fondo neón animado ---------- */
-.bg-neon {
-  position: fixed;
-  inset: -20vmax;
-  pointer-events: none;
-  z-index: -2;
+.bg-neon{
+  position:fixed; inset:-20vmax; pointer-events:none; z-index:-2;
   background:
     radial-gradient(closest-corner at 20% 20%, #ff5bb044, transparent 60%),
     radial-gradient(closest-corner at 85% 10%, #8b7dff44, transparent 60%),
     radial-gradient(closest-corner at 60% 80%, #ffa45b44, transparent 60%);
-  filter: blur(40px);
-  animation: drift 18s ease-in-out infinite alternate;
+  filter:blur(40px);
+  animation:drift 18s ease-in-out infinite alternate;
 }
-
-@keyframes drift {
-  from { transform: translate(0, 0); }
-  to   { transform: translate(3vw, -2vh); }
-}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(3vw,-2vh)}}
 
 /* ---------- Layout ---------- */
-.wrap {
-  max-width: 1000px;
-  margin: auto;
-  padding: 2rem 1.2rem;
-}
+.wrap{max-width:1000px; margin:auto; padding:2rem 1.2rem}
 
 /* ---------- HERO con foto elegante ---------- */
 .hero{
-  position:relative;
-  text-align:center;
-  margin-top:1rem;
+  position:relative; text-align:center; margin-top:1rem;
   padding:clamp(3rem,8vw,5rem) 1.2rem;
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:0 12px 40px #00000066;
-
-  /* Fondo: tu foto */
+  border-radius:24px; overflow:hidden; box-shadow:0 12px 40px #0006;
   background: url("/Fotos_Noemi/Noemi_3.jpg") center/cover no-repeat fixed;
 }
-
-/* Capa de degradado para mejor legibilidad */
 .hero::before{
-  content:"";
-  position:absolute; inset:0;
+  content:""; position:absolute; inset:0;
   background:
     radial-gradient(70% 70% at 50% 20%, #00000055, transparent 60%),
     linear-gradient(180deg, #0b0916aa 0%, #0b091699 60%, #0b091680 100%);
   backdrop-filter:saturate(120%) blur(2px);
 }
-
-/* Eleva el contenido del hero por encima de la capa */
-.hero > *{ position:relative; z-index:1; }
+.hero > *{ position:relative; z-index:1 }
 
 /* ---------- Tipografías y títulos ---------- */
-.script {
-  font-family: "Great Vibes", cursive;
-  font-weight: 400;
-  font-size: clamp(3rem, 9vw, 6rem);
-  line-height: 1;
-  margin: .2rem 0;
-  text-shadow: 0 0 30px #ff5bb055;
+.script{
+  font-family:"Great Vibes",cursive; font-weight:400;
+  font-size:clamp(3rem,9vw,6rem); line-height:1; margin:.2rem 0;
+  text-shadow:0 0 30px #ff5bb055;
 }
-
-h2 {
-  margin: .3rem 0 1rem;
-  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
-}
-
-.tag {
-  color: var(--muted);
-  font-size: 1.1rem;
-  margin: .2rem 0 1.2rem;
-}
+h2{ margin:.3rem 0 1rem; font-size:clamp(1.4rem,4.5vw,1.8rem) }
+.tag{ color:var(--muted); font-size:1.1rem; margin:.2rem 0 1.2rem }
 
 /* ---------- Tarjetas ---------- */
-.card {
-  backdrop-filter: blur(12px);
-  background: var(--card);
-  border: 1px solid var(--stroke);
-  border-radius: 20px;
-  padding: 1.2rem;
-  margin: 1rem 0;
-  box-shadow: 0 8px 30px #00000055;
+.card{
+  backdrop-filter:blur(12px);
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  padding:1.2rem; margin:1rem 0;
+  box-shadow:0 8px 30px #0008;
 }
 
 /* ---------- Botones ---------- */
-.btn {
-  border: 1px solid #ffffff44;
-  background: #ffffff1a;
-  color: var(--ink);
-  padding: .65rem 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform .06s ease, background .2s ease;
+.btn{
+  border:1px solid #ffffff44; background:#ffffff1a; color:var(--ink);
+  padding:.65rem 1rem; border-radius:12px; cursor:pointer;
+  transition:transform var(--t-fast) var(--ease), background var(--t-slow) var(--ease);
 }
-.btn:hover   { transform: translateY(-1px); background: #ffffff24; }
-.btn:active  { transform: translateY( 0 ); }
-.btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.btn.icon   { font-size: 1.6rem; padding: .4rem .8rem; }
+.btn:hover{ transform:translateY(-1px); background:#ffffff24 }
+.btn:active{ transform:translateY(0) }
+.btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px }
+.btn.icon{ font-size:1.6rem; padding:.4rem .8rem }
 .btn.primary{
-  border: 0;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  color: #fff;
-  box-shadow: 0 8px 25px #00000055;
+  border:0; color:#fff; box-shadow:0 8px 25px #0008;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
 }
+.btn.ghost{ background:#ffffff12; border-color:#ffffff33 }
 
 /* Botonera (evita amontonarse en móvil) */
 .cta{
   display:flex;
-  flex-wrap:wrap;       /* ✅ baja a otra línea si no cabe */
+  flex-wrap:wrap;
   gap:.6rem;
   justify-content:center;
 }
 
 /* ---------- Galería ---------- */
-.gallery{ position: relative; }                 /* contenedor de referencia */
+.gallery{ position:relative; display:grid; grid-template-columns:1fr; gap:.75rem; align-items:center }
+
+/* Flechas siempre encima y tocables */
 .gallery > .btn.icon{
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;                                  /* sobre la foto */
-  width: 42px; height: 42px;                   /* mejor objetivo táctil */
-  display: grid; place-items: center;
-  border-radius: 12px;
-  backdrop-filter: blur(4px);
+  position:absolute; top:50%; transform:translateY(-50%);
+  z-index:5; width:44px; height:44px; display:grid; place-items:center;
+  border-radius:12px; backdrop-filter:blur(4px);
+  background:#00000055; color:#fff; border:1px solid #ffffff33;
+}
+#prev{ left:12px }
+#next{ right:12px }
+
+.gallery img{
+  display:block; width:100%;
+  height:min(62vh,520px);
+  object-fit:var(--fit);           /* cover o contain */
+  background:#000;                 /* útil cuando --fit: contain */
+  border-radius:16px;
+  border:1px solid #ffffff22;
+  box-shadow:0 6px 20px #0006;
 }
 
-.gallery img {
-  display: block;        /* quita espacio abajo */
-  width: 100%;
-  height: min(62vh, 520px);
-  object-fit: var(--fit);      /* cover o contain según variable */
-  background: #000000;         /* útil cuando --fit: contain */
-  border-radius: 16px;
-  border: 1px solid #ffffff22;
-  box-shadow: 0 6px 20px #0000003a;
-}
+/* Caption (bajo la foto) */
+.caption{ color:var(--muted); margin:.4rem 0 .2rem }
 
 /* Miniaturas (thumbnails) */
-.thumbs {
-  display: flex;
-  gap: .4rem;
-  flex-wrap: wrap;
-  margin-top: .6rem;
+.thumbs{ display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.6rem }
+.thumbs img{
+  width:88px; height:60px; object-fit:cover; border-radius:10px;
+  opacity:.75; border:1px solid #ffffff22; cursor:pointer;
+  transition:opacity var(--t-slow) var(--ease), transform var(--t-fast) var(--ease);
 }
-.thumbs img {
-  width: 88px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 10px;
-  opacity: .7;
-  border: 1px solid #ffffff22;
-  cursor: pointer;
-}
-.thumbs img.active {
-  opacity: 1;
-  outline: 2px solid var(--accent);
-}
+.thumbs img:hover{ opacity:.95; transform:translateY(-1px) }
+.thumbs img.active{ opacity:1; outline:2px solid var(--accent) }
 
 /* ---------- Acciones ---------- */
-.actions {
-  display: flex;
-  gap: .6rem;
-  flex-wrap: wrap;
-  margin-top: .6rem;
-}
+.actions{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.6rem }
+
+/* ---------- Quiz (estética mínima) ---------- */
+.q{ margin:.6rem 0 }
+.q h3{ margin:.2rem 0 .4rem; font-size:1rem }
+.q .row{ display:flex; flex-wrap:wrap; gap:.5rem }
 
 /* ---------- Footer ---------- */
-.foot {
-  text-align: center;
-  opacity: .8;
-  padding-bottom: 3rem;
-}
+.foot{ text-align:center; opacity:.85; padding-bottom:3rem }
 
 /* ---------- Canvas de efectos ---------- */
-#fx {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
+#fx{ position:fixed; inset:0; z-index:-1; pointer-events:none }
 
 /* ---------- Toasts (mensajes flotantes) ---------- */
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 10vh;
-  transform: translateX(-50%);
-  background: #1b1530ee;
-  color: #fff;
-  padding: .6rem 1rem;
-  border-radius: 12px;
-  border: 1px solid #ffffff22;
-  box-shadow: 0 10px 30px #00000077;
+.toast{
+  position:fixed; left:50%; bottom:10vh; transform:translateX(-50%);
+  background:#1b1530ee; color:#fff; padding:.6rem 1rem; border-radius:12px;
+  border:1px solid #ffffff22; box-shadow:0 10px 30px #000c;
 }
 
 /* ---------- Responsivo extra ---------- */
-@media (max-width: 600px){
-  .hero{
-    background-position:center 20%;
-    padding: clamp(2.6rem, 10vw, 3.4rem) 1rem;
-  }
+@media (max-width:600px){
+  .hero{ background-position:center 20%; padding:clamp(2.6rem,10vw,3.4rem) 1rem }
+  .btn.icon{ padding:.35rem .7rem }
 }
-@media (max-width: 480px) {
-  .gallery img { height: 52vh; }   /* un poco más bajo en móviles muy pequeños */
-  .thumbs img  { width: 76px; height: 52px; }
-  .cta .btn    { flex:1 1 auto; text-align:center; }
-  .btn.icon    { padding:.35rem .7rem; }
+@media (max-width:480px){
+  .gallery img{ height:52vh }
+  .thumbs img{ width:76px; height:52px }
+  .cta .btn{ flex:1 1 auto; text-align:center }
 }
 
-/* =========================================================
-   Opcional: cambia el ajuste de foto sin tocar CSS
-   - En JS o en el HTML, añade: document.body.dataset.fit = 'contain';
-   - CSS escucha data-fit para forzar el modo
-   ========================================================= */
-body[data-fit="contain"] .gallery img { object-fit: contain; }
-body[data-fit="cover"]   .gallery img { object-fit: cover; }
+/* ---------- Accesibilidad / prefers-reduced-motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none!important; transition:none!important; scroll-behavior:auto!important }
+}
+
+/* ---------- Ajuste de fit por data-atributo ---------- */
+body[data-fit="contain"] .gallery img{ object-fit:contain }
+body[data-fit="cover"]   .gallery img{ object-fit:cover }
+
 /* =========================================================
    Fin de estilos base
    ========================================================= */

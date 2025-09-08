@@ -139,15 +139,50 @@ async function loadFromJson() {
   }
 }
 
-// 2) Construir la galería
-async function buildGallery() {
-  photos = (await loadFromJson()) || [];
+// --- REEMPLAZA tu loadFromJson() por este ---
+async function loadFromJson() {
+  try {
+    const res = await fetch("/Fotos_Noemi/fotos.json", { cache: "no-store" });
+    if (!res.ok) throw 0;
+    const list = await res.json();
 
-  if (photos.length === 0) {
-    photos = [
-      { src: "/assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }
-    ];
+    // Limpia un nombre de archivo -> "Noemi_1.jpg" -> "Noemi 1"
+    const pretty = (name = "") =>
+      name.replace(/^.*[\\/]/, "")      // quita rutas
+          .replace(/\.[^.]+$/, "")      // quita extensión
+          .replace(/[_-]+/g, " ")       // _ o - -> espacio
+          .replace(/\s+/g, " ")         // espacios dobles
+          .trim()
+          .replace(/\b\w/g, c => c.toUpperCase()); // Capitaliza
+
+    const items = list.map((it) => {
+      // Formato 1: string
+      if (typeof it === "string") {
+        const file = it.trim();
+        return {
+          src: `/Fotos_Noemi/${encodeURIComponent(file)}`,
+          caption: pretty(file),
+        };
+      }
+      // Formato 2: objeto { src? | file?, caption? }
+      if (it && typeof it === "object") {
+        const fileOrSrc = it.src || it.file || "";
+        const src = fileOrSrc.startsWith("/")
+          ? fileOrSrc
+          : `/Fotos_Noemi/${encodeURIComponent(fileOrSrc)}`;
+        return {
+          src,
+          caption: it.caption ?? pretty(fileOrSrc),
+        };
+      }
+      return null;
+    });
+
+    return items.filter(Boolean);
+  } catch {
+    return null;
   }
+}
 
   // Pintar miniaturas
   if (thumbsEl) {
@@ -171,7 +206,6 @@ async function buildGallery() {
     if (e.key === "ArrowLeft")  mount(current - 1);
     if (e.key === "ArrowRight") mount(current + 1);
   });
-}
 
 // 3) Mostrar la foto seleccionada
 function mount(i) {
@@ -232,9 +266,9 @@ $("#btn-voz")?.addEventListener("click", () => {
    6) Adivinanzas de amor (quiz)
    ========================================================= */
 const preguntas = [
-  { q: "¿Cuándo es nuestro aniversario?", a: ["12", "14", "10"], ok: 1 },
+  { q: "¿Me pasarias fotos de adelante y atras ahora en nuestro primer mes?", a: ["Talvez", "Si", "Ummm"], ok: 1 },
   { q: "¿Dónde nos conocimos?",          a: ["Instagram", "Facebook", "Free Fire"], ok: 2 },
-  { q: "¿Qué debe mandar la fecha del mes?", a: ["Foto", "Chiste", "Nada"], ok: 0 },
+  { q: "¿Me darias un beso virtual?", a: ["SI", "No", "Quizas"], ok: 0 },
 ];
 
 const quizEl = $("#quiz");
@@ -341,32 +375,44 @@ btnInstall?.addEventListener("click", async () => {
 })();
 
 /* =========================================================
-   9) Sorpresa del mes (desde /config_meses.json)
+   Sorpresa del mes (desde config_meses.json)
+   - Si hay entrada para AAAA-MM -> cambia texto y href
+   - Si NO hay JSON o no hay entrada => deja el botón como está
    ========================================================= */
 (async function monthlyLink(){
-  const link = document.querySelector('#link-mes') || document.querySelector('a[href="/flores/"]');
+  // 1) Prefiere el id (más robusto), y si no existe usa el selector como respaldo
+  const link = document.getElementById("link-mes")
+            || document.querySelector('a[href="/flores/"]');
   if (!link) return;
 
-  // por defecto: visible con /flores/
-  link.style.display = "";
-  link.href = "/flores/";
-  link.textContent = link.textContent || "Flores Amarillas 🌼";
+  // 2) Obtén la clave AAAA-MM de HOY
+  const now  = new Date();
+  const yyyy = now.getFullYear();
+  const mm   = String(now.getMonth() + 1).padStart(2, "0");
+  const key  = `${yyyy}-${mm}`;
 
+  // 3) Intenta leer el JSON (ruta RELATIVA para evitar problemas de raíz)
   try {
-    const res = await fetch("/config_meses.json", { cache: "no-store" });
-    if (!res.ok) return; // si falla, lo dejamos visible por defecto
+    const res = await fetch("config_meses.json", { cache: "no-store" });
+    if (!res.ok) {
+      console.warn("[mes] config_meses.json no disponible (status:", res.status, ")");
+      return; // no toques el botón si no hay config
+    }
 
-    const now = new Date();
-    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,"0")}`;
-    const map = await res.json();
+    const map  = await res.json();
     const conf = map[key];
 
     if (conf && conf.path) {
-      link.href = conf.path;
-      link.textContent = conf.label || link.textContent;
+      link.href = conf.path;                              // ej. "/flores/"
+      link.textContent = conf.label || "Sorpresa del mes ✨";
+      link.style.display = "";                            // asegúrate que esté visible
+    } else {
+      // Si **sí** hay JSON pero NO hay entrada del mes, entonces puedes ocultarlo
+      link.style.display = "none";
     }
-    // si no hay clave del mes → dejamos el botón tal cual (visible)
-  } catch {
-    // si hay error de red/JSON, NO lo ocultamos
+  } catch (err) {
+    console.warn("[mes] No se pudo leer config_meses.json:", err);
+    // IMPORTANTE: no ocultes el botón si falló el fetch
   }
 })();
+

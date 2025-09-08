@@ -20,6 +20,14 @@
           "backdrop-filter"
         ]
       }
+    ],
+    "no-inline-styles": "off",
+    "manifest-is-valid": "off",
+    "axe/parsing": [
+      "default",
+      {
+        "duplicate-id-active": "off"
+      }
     ]
   }
 }
