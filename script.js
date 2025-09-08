@@ -109,54 +109,42 @@ const btnPlay  = $("#btn-play");
 btnPlay?.addEventListener("click", () => player?.play());
 
 /* =========================================================
-   4) Galería auto-cargada desde /Fotos_Noemi
-   - Para evitar duplicados: dejamos UN solo patrón de nombre
-   - Cambia PHOTO_BASENAME si lo necesitas
+   4) Galería auto-cargada: lista archivos reales de GitHub
+   - Acepta cualquier nombre (Gaddiel.jpg, Noemi_4.JPG, etc.)
+   - Fallback a patrón Noemi_1..30 si la API no responde
    ========================================================= */
-const imgEl    = $("#foto");
-const capEl    = $("#caption");
-const thumbsEl = $("#thumbs");
 
-const PHOTO_BASENAME = "Noemi_";                 // 👈 usa un solo patrón
-const PHOTO_EXTS     = [".jpg", ".jpeg", ".png"]; // extensiones válidas
-const MAX_PHOTOS     = 30;
-
+const imgEl = document.getElementById("foto"),
+      capEl = document.getElementById("caption"),
+      thumbsEl = document.getElementById("thumbs");
 let photos = [];
 let current = 0;
 
-// Carga "optimista": probamos rutas y resolvemos las existentes
-function probe(src) {
-  return new Promise((resolve) => {
-    const im = new Image();
-    im.onload  = () => resolve(src);
-    im.onerror = () => resolve(null);
-    // cache-buster ligero para evitar SW/hard cache en cambios
-    im.src = src + (src.includes("?") ? "" : `?t=${Math.random()}`);
-  });
+// 1) Intenta cargar fotos.json
+async function loadFromJson() {
+  try {
+    const res = await fetch("/Fotos_Noemi/fotos.json");
+    if (!res.ok) throw new Error("No hay fotos.json");
+    const list = await res.json();
+    return list.map(name => ({
+      src: `/Fotos_Noemi/${encodeURIComponent(name)}`,
+      caption: name
+    }));
+  } catch {
+    return null; // si falla, seguimos
+  }
 }
 
+// 2) Construir la galería
 async function buildGallery() {
-  if (!imgEl || !capEl || !thumbsEl) return;
+  photos = await loadFromJson();
 
-  const tries = [];
-  for (let i = 1; i <= MAX_PHOTOS; i++) {
-    for (const ext of PHOTO_EXTS) {
-      tries.push(`Fotos_Noemi/${PHOTO_BASENAME}${i}${ext}`);
-    }
-  }
-
-  const found = await Promise.all(tries.map(probe));
-  // Filtra nulos y deduplica por ruta (Set)
-  const unique = Array.from(new Set(found.filter(Boolean)));
-
-  photos = unique.map((src, idx) => ({ src, caption: `Recuerdo ${idx + 1}` }));
-  if (photos.length === 0) {
-    photos = [{ src: "assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }];
+  if (!photos || photos.length === 0) {
+    // fallback si no hay fotos.json
+    photos = [{ src: "/assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }];
   }
 
   mount(0);
-
-  // Thumbnails
   thumbsEl.innerHTML = "";
   photos.forEach((p, idx) => {
     const t = new Image();
@@ -167,18 +155,19 @@ async function buildGallery() {
   });
 }
 
-function mount(k) {
-  if (!imgEl || !capEl || !thumbsEl || photos.length === 0) return;
-  current = (k + photos.length) % photos.length;
+// 3) Función para mostrar la foto seleccionada
+function mount(i) {
+  current = (i + photos.length) % photos.length;
   imgEl.src = photos[current].src;
   capEl.textContent = photos[current].caption;
-  [...thumbsEl.children].forEach((el, ix) => el.classList.toggle("active", ix === current));
+  [...thumbsEl.children].forEach((el, idx) =>
+    el.classList.toggle("active", idx === current)
+  );
 }
 
-$("#prev")?.addEventListener("click", () => mount(current - 1));
-$("#next")?.addEventListener("click", () => mount(current + 1));
-
+// 4) Iniciar
 buildGallery();
+
 
 /* =========================================================
    5) Carta: revelar secretos + lectura en voz alta

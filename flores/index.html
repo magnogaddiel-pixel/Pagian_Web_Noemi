@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flores Amarillas — Para Noemí</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="bg-neon"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <header class="wrap hero">
+    <h1 class="script">Flores Amarillas</h1>
+    <p class="tag">Porque contigo todo florece</p>
+    <div class="cta">
+      <a href="/" class="btn ghost">← Volver a la página principal</a>
+      <button id="btnPlay" class="btn primary">Nuestra canción</button>
+      <button id="btnPetalos" class="btn">Soltar pétalos</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Un ramo para ti 🌼</h2>
+      <p>Hoy te traigo un jardín de sorpresas, pétalos que bailan y promesas que brillan. Gracias por este primer capítulo juntos, Noemí.</p>
+      <div class="flowers-grid">
+        <div class="flower-card">
+          <div class="flower-emoji">🌼</div>
+          <h3>Detalles</h3>
+          <p>Que nunca falten risas, canciones tontas y paseos con helado.</p>
+        </div>
+        <div class="flower-card">
+          <div class="flower-emoji">🌻</div>
+          <h3>Color</h3>
+          <p>El amarillo nos recuerda que el amor también es sol de invierno.</p>
+        </div>
+        <div class="flower-card">
+          <div class="flower-emoji">💛</div>
+          <h3>Promesa</h3>
+          <p>Estar, escuchar, y hacer de lo simple algo inolvidable.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Adivinanza amarilla</h2>
+      <p class="hint">Si aciertas, confetti. Si fallas, carita tierna 🥺</p>
+      <div class="quiz">
+        <p class="q">¿Qué flor te daría hoy?</p>
+        <div class="ops">
+          <button class="btn op">Rosas</button>
+          <button class="btn op" data-ok>Girasoles</button>
+          <button class="btn op">Tulipanes</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Nuestra música</h2>
+      <audio id="player" preload="none" controls>
+        <source src="/assets/flores_amarillas.mp3" type="audio/mpeg">
+      </audio>
+      <p class="small">Pon tu canción como <code>/assets/flores_amarillas.mp3</code> en la raíz del proyecto.</p>
+    </section>
+
+    <section class="card">
+      <h2>Más amor</h2>
+      <div class="cta">
+        <a class="btn ghost" href="/">← Volver a la página principal</a>
+        <a class="btn" href="#top">Subir ↑</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <small>Hecho por Gaddiel — <span id="anio"></span></small>
+  </footer>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>
