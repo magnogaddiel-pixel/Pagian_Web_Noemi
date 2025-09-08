@@ -179,8 +179,12 @@ async function loadFromJson() {
     });
 
     return items.filter(Boolean);
-  } catch {
-    return null;
+  } catch { // Fallback por si falta fotos.json: usa nombres conocidos (ajústalo a lo que tengas)
+    const fallback = ["Noemi_1.jpg","Noemi_2.jpg","Noemi_3.jpg","Noemi_4.jpg"];
+    return fallback.map(f => ({
+      src: `/Fotos_Noemi/${encodeURIComponent(f)}`,
+      caption: f.replace(/\.[^.]+$/, "").replace(/_/g," "),
+    }));
   }
 }
 
@@ -209,16 +213,12 @@ async function loadFromJson() {
 
 // 3) Mostrar la foto seleccionada
 function mount(i) {
-  if (!imgEl || !capEl || !photos.length) return;
+function mount(i) {
   current = (i + photos.length) % photos.length;
-  imgEl.src = photos[current].src;
-  imgEl.alt = photos[current].caption || "Recuerdo";
-  capEl.textContent = photos[current].caption || "";
-  if (thumbsEl) {
-    [...thumbsEl.children].forEach((el, idx) =>
-      el.classList.toggle("active", idx === current)
-    );
-  }
+  const src = photos[current].src;
+  imgEl.src = `${src}${src.includes("?") ? "&" : "?"}v=${Date.now()}`; // bust cache
+  capEl.textContent = photos[current].caption;
+  [...thumbsEl.children].forEach((el, idx) => el.classList.toggle("active", idx === current));
 }
 
 // 4) Iniciar
