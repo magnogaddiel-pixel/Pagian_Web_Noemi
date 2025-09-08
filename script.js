@@ -127,11 +127,11 @@ let current = 0;
 // 1) Intenta cargar /Fotos_Noemi/fotos.json (modo sin API)
 async function loadFromJson() {
   try {
-    const res = await fetch("/Fotos_Noemi/fotos.json", { cache: "no-store" });
+    const res = await fetch("Fotos_Noemi/fotos.json", { cache: "no-store" });
     if (!res.ok) throw new Error("No hay fotos.json");
     const list = await res.json();
     return list.map((name) => ({
-      src: `/Fotos_Noemi/${encodeURIComponent(name)}`,
+      src: `Fotos_Noemi/${encodeURIComponent(file)}`,
       caption: name
     }));
   } catch {

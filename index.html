@@ -5,32 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Para mi amor Noemí — Primer Mes</title>
 
-  <!-- PWA / tema -->
   <meta name="theme-color" content="#ff5bb0" />
   <meta name="description" content="Un primer mes lleno de sorpresas para Noemí: recuerdos, juegos, música y mucho amor.">
-  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="manifest" href="manifest.webmanifest">
 
-  <!-- Iconos (usa tus JPG del proyecto) -->
-  <link rel="icon" href="/assets/icon-192.jpg" sizes="192x192" type="image/jpeg">
-  <link rel="apple-touch-icon" href="/assets/icon-192.jpg">
-  <link rel="apple-touch-icon" sizes="512x512" href="/assets/icon-512.jpg">
+  <link rel="icon" href="assets/icon-192.jpg" sizes="192x192" type="image/jpeg">
+  <link rel="apple-touch-icon" href="assets/icon-192.jpg">
+  <link rel="apple-touch-icon" sizes="512x512" href="assets/icon-512.jpg">
 
 
-  <!-- Open Graph / Twitter -->
   <meta property="og:title" content="Para mi amor Noemí — Primer Mes">
   <meta property="og:description" content="Sorpresas, recuerdos y mucho amor.">
-  <meta property="og:image" content="/Fotos_Noemi/Noemi_3.jpg">
+  <meta property="og:image" content="Fotos_Noemi/Noemi_3.jpg">
   <meta property="og:type" content="website">
   <meta property="og:url" content="/">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="fx" aria-hidden="true"></canvas>
@@ -42,7 +37,7 @@
     <div class="cta">
       <button class="btn primary" id="btn-play">Reproducir nuestra canción</button>
       <a href="#galeria" class="btn ghost">Ver recuerdos</a>
-         <a id="link-mes" href="/flores/" class="btn ghost">Flores Amarillas 🌼</a>
+         <a id="link-mes" href="flores/" class="btn ghost">Flores Amarillas 🌼</a>
       <a id="link-mes" class="btn ghost" style="display:none"></a>
     </div>
   </header>
@@ -79,7 +74,7 @@
     <section class="card" id="musica">
       <h2>Nuestra canción</h2>
       <audio id="player" preload="none" controls>
-        <source src="/assets/amor_2.mp3" type="audio/mpeg">
+        <source src="assets/amor_2.mp3" type="audio/mpeg">
       </audio>
     </section>
 
@@ -93,7 +88,6 @@
     <small>Hecho por Gaddiel para ti mi amor Noemí — <span id="anio"></span></small>
   </footer>
 
-  <!-- JS principal (contiene el registro del SW y toda la lógica) -->
-  <script src="/script.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
