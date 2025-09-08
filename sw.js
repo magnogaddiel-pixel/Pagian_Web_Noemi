@@ -3,7 +3,7 @@
    Controla qué se guarda para funcionar offline
    ========================================================= */
 
-const CACHE_NAME = "noemi-magic-v4.4"; // ⚡ Nueva versión
+const CACHE_NAME = "noemi-magic-v4.5"; // ⚡ Nueva versión
 
 const ASSETS = [
   "/",                        // raíz
