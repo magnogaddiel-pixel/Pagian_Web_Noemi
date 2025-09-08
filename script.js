@@ -15,7 +15,7 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
    1) Emojis de amor al tocar/clic
    ========================================================= */
 (function heartBursts() {
-  const EMOJIS = ["💖", "💘", "💝", "💗", "💓", "💕","🥰", "😍"];
+  const EMOJIS = ["💖", "💘", "💝", "💗", "💓", "💕", "🥰", "😍"];
 
   function spawnHeart(x, y) {
     const el = document.createElement("div");
@@ -27,6 +27,7 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
       fontSize: "24px",
       pointerEvents: "none",
       transform: "translate(-50%, -10px)",
+      zIndex: 9999
     });
     document.body.appendChild(el);
 
@@ -40,15 +41,16 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
     ).onfinish = () => el.remove();
   }
 
-// i = índice actual; montar(k) cambia la foto
-document.getElementById("prev")?.addEventListener("click", () => montar(i - 1));
-document.getElementById("next")?.addEventListener("click", () => montar(i + 1));
-
-// bonus: flechas del teclado
-addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft")  montar(i - 1);
-  if (e.key === "ArrowRight") montar(i + 1);
-});
+  // Disparadores (click y touch)
+  document.addEventListener("click", (e) => spawnHeart(e.clientX, e.clientY));
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      if (t) spawnHeart(t.clientX, t.clientY);
+    },
+    { passive: true }
+  );
 })();
 
 /* =========================================================
@@ -104,70 +106,89 @@ confettiTick();
 const yearEl = $("#anio");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-const player   = $("#player");
-const btnPlay  = $("#btn-play");
-btnPlay?.addEventListener("click", () => player?.play());
+const player  = $("#player");
+const btnPlay = $("#btn-play");
+btnPlay?.addEventListener("click", () => {
+  player?.play()?.catch(() => {/* silencioso */});
+});
 
 /* =========================================================
-   4) Galería auto-cargada: lista archivos reales de GitHub
-   - Acepta cualquier nombre (Gaddiel.jpg, Noemi_4.JPG, etc.)
-   - Fallback a patrón Noemi_1..30 si la API no responde
+   4) Galería auto-cargada (desde fotos.json si existe)
    ========================================================= */
+const imgEl    = $("#foto");
+const capEl    = $("#caption");
+const thumbsEl = $("#thumbs");
+const btnPrev  = $("#prev");
+const btnNext  = $("#next");
 
-const imgEl = document.getElementById("foto"),
-      capEl = document.getElementById("caption"),
-      thumbsEl = document.getElementById("thumbs");
-let photos = [];
+let photos  = [];
 let current = 0;
 
-// 1) Intenta cargar fotos.json
+// 1) Intenta cargar /Fotos_Noemi/fotos.json (modo sin API)
 async function loadFromJson() {
   try {
-    const res = await fetch("/Fotos_Noemi/fotos.json");
+    const res = await fetch("/Fotos_Noemi/fotos.json", { cache: "no-store" });
     if (!res.ok) throw new Error("No hay fotos.json");
     const list = await res.json();
-    return list.map(name => ({
+    return list.map((name) => ({
       src: `/Fotos_Noemi/${encodeURIComponent(name)}`,
       caption: name
     }));
   } catch {
-    return null; // si falla, seguimos
+    return null;
   }
 }
 
 // 2) Construir la galería
 async function buildGallery() {
-  photos = await loadFromJson();
+  photos = (await loadFromJson()) || [];
 
-  if (!photos || photos.length === 0) {
-    // fallback si no hay fotos.json
-    photos = [{ src: "/assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }];
+  if (photos.length === 0) {
+    photos = [
+      { src: "/assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }
+    ];
   }
 
+  // Pintar miniaturas
+  if (thumbsEl) {
+    thumbsEl.innerHTML = "";
+    photos.forEach((p, idx) => {
+      const t = new Image();
+      t.src = p.src;
+      t.alt = `Miniatura ${idx + 1}`;
+      t.addEventListener("click", () => mount(idx));
+      thumbsEl.appendChild(t);
+    });
+  }
+
+  // Mostrar primera
   mount(0);
-  thumbsEl.innerHTML = "";
-  photos.forEach((p, idx) => {
-    const t = new Image();
-    t.src = p.src;
-    t.alt = `Miniatura ${idx + 1}`;
-    t.addEventListener("click", () => mount(idx));
-    thumbsEl.appendChild(t);
+
+  // Controles (una vez existen mount/current)
+  btnPrev?.addEventListener("click", () => mount(current - 1));
+  btnNext?.addEventListener("click", () => mount(current + 1));
+  addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft")  mount(current - 1);
+    if (e.key === "ArrowRight") mount(current + 1);
   });
 }
 
-// 3) Función para mostrar la foto seleccionada
+// 3) Mostrar la foto seleccionada
 function mount(i) {
+  if (!imgEl || !capEl || !photos.length) return;
   current = (i + photos.length) % photos.length;
   imgEl.src = photos[current].src;
-  capEl.textContent = photos[current].caption;
-  [...thumbsEl.children].forEach((el, idx) =>
-    el.classList.toggle("active", idx === current)
-  );
+  imgEl.alt = photos[current].caption || "Recuerdo";
+  capEl.textContent = photos[current].caption || "";
+  if (thumbsEl) {
+    [...thumbsEl.children].forEach((el, idx) =>
+      el.classList.toggle("active", idx === current)
+    );
+  }
 }
 
 // 4) Iniciar
 buildGallery();
-
 
 /* =========================================================
    5) Carta: revelar secretos + lectura en voz alta
@@ -177,11 +198,11 @@ const secretos = [
   "Prometo cuidarte cuando haga frío y celebrar contigo cuando salga el sol.",
   "Gracias por hacer que un mes se sienta como un sueño bonito.",
   "Eres mi persona favorita en todo el mundo.",
-    "Cada momento contigo es un tesoro que guardo en mi corazón.",
-    "Contigo, cada día es una nueva aventura llena de amor y alegría.",
-    "Eres la razón por la que sonrío sin motivo.",
-    "Tu amor es el regalo más hermoso que he recibido.",
-    "A tu lado, he descubierto lo que significa el verdadero amor.",
+  "Cada momento contigo es un tesoro que guardo en mi corazón.",
+  "Contigo, cada día es una nueva aventura llena de amor y alegría.",
+  "Eres la razón por la que sonrío sin motivo.",
+  "Tu amor es el regalo más hermoso que he recibido.",
+  "A tu lado, he descubierto lo que significa el verdadero amor."
 ];
 
 let paso = 0;
@@ -211,9 +232,9 @@ $("#btn-voz")?.addEventListener("click", () => {
    6) Adivinanzas de amor (quiz)
    ========================================================= */
 const preguntas = [
-  { q: "¿Cuando es nuestro aniversario?", a: ["12", "14", "10"], ok: 1 },
-  { q: "¿Donde nos conocimos?",                 a: ["Instagram", "Facebook", "Free Fire"], ok: 2 },
-  { q: "¿Que es lo que tiene que mandar la fecha de nuestro mes?",             a: ["Foto", "Chiste", "Nada"], ok: 0 },
+  { q: "¿Cuándo es nuestro aniversario?", a: ["12", "14", "10"], ok: 1 },
+  { q: "¿Dónde nos conocimos?",          a: ["Instagram", "Facebook", "Free Fire"], ok: 2 },
+  { q: "¿Qué debe mandar la fecha del mes?", a: ["Foto", "Chiste", "Nada"], ok: 0 },
 ];
 
 const quizEl = $("#quiz");
@@ -225,8 +246,8 @@ function toast(msg) {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1600);
 }
-const okMsg   = () => "¡Correcto, amor! 💖";
-const badMsg  = () => "Ups, intenta otra vez 🥺";
+const okMsg  = () => "¡Correcto, amor! 💖";
+const badMsg = () => "Ups, intenta otra vez 🥺";
 
 if (quizEl) {
   preguntas.forEach((p, idx) => {
@@ -273,3 +294,79 @@ btnInstall?.addEventListener("click", async () => {
   await deferredPrompt.userChoice;
   deferredPrompt = null;
 });
+
+/* =========================================================
+   8) Actualización de la app (banner "Nueva versión disponible")
+   ========================================================= */
+(function setupSWUpdater(){
+  if (!("serviceWorker" in navigator)) return;
+
+  function showUpdateBanner(reg) {
+    if (!reg || !reg.waiting) return;
+    const el = Object.assign(document.createElement("div"), { id: "update-banner" });
+    el.style.cssText = `
+      position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+      background: #1b1530ee; color: #fff; border: 1px solid #ffffff33;
+      padding: .6rem 1rem; border-radius: 12px; z-index: 9999;
+      box-shadow: 0 10px 30px #0008; display: flex; gap: .6rem; align-items: center;
+      font: 14px/1.2 Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    `;
+    const txt = document.createElement("span");
+    txt.textContent = "Hay una nueva versión de la app.";
+    const btn = Object.assign(document.createElement("button"), { className: "btn" });
+    btn.textContent = "Actualizar";
+    btn.style.background = "#ffffff1a";
+    btn.style.color = "#fff";
+    btn.style.border = "1px solid #ffffff44";
+    btn.onclick = () => {
+      reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      navigator.serviceWorker.addEventListener("controllerchange", () => location.reload());
+    };
+    el.append(txt, btn);
+    document.body.appendChild(el);
+  }
+
+  navigator.serviceWorker.register("/sw.js").then((reg) => {
+    reg.addEventListener("updatefound", () => {
+      const sw = reg.installing;
+      sw && sw.addEventListener("statechange", () => {
+        if (sw.state === "installed" && navigator.serviceWorker.controller) {
+          showUpdateBanner(reg);
+        }
+      });
+    });
+
+    if (reg.waiting) showUpdateBanner(reg);
+  }).catch(console.error);
+})();
+
+/* =========================================================
+   9) Sorpresa del mes (desde /config_meses.json)
+   ========================================================= */
+(async function monthlyLink(){
+  const link = document.querySelector('#link-mes') || document.querySelector('a[href="/flores/"]');
+  if (!link) return;
+
+  // por defecto: visible con /flores/
+  link.style.display = "";
+  link.href = "/flores/";
+  link.textContent = link.textContent || "Flores Amarillas 🌼";
+
+  try {
+    const res = await fetch("/config_meses.json", { cache: "no-store" });
+    if (!res.ok) return; // si falla, lo dejamos visible por defecto
+
+    const now = new Date();
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,"0")}`;
+    const map = await res.json();
+    const conf = map[key];
+
+    if (conf && conf.path) {
+      link.href = conf.path;
+      link.textContent = conf.label || link.textContent;
+    }
+    // si no hay clave del mes → dejamos el botón tal cual (visible)
+  } catch {
+    // si hay error de red/JSON, NO lo ocultamos
+  }
+})();
