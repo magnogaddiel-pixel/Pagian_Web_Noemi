@@ -140,55 +140,79 @@ async function loadFromJson() {
 }
 
 // --- REEMPLAZA tu loadFromJson() por este ---
+// 1) Carga JSON robusto (strings u objetos)
 async function loadFromJson() {
   try {
     const res = await fetch("/Fotos_Noemi/fotos.json", { cache: "no-store" });
-    if (!res.ok) throw 0;
+    if (!res.ok) throw new Error("No hay fotos.json");
     const list = await res.json();
 
-    // Limpia un nombre de archivo -> "Noemi_1.jpg" -> "Noemi 1"
     const pretty = (name = "") =>
-      name.replace(/^.*[\\/]/, "")      // quita rutas
-          .replace(/\.[^.]+$/, "")      // quita extensión
-          .replace(/[_-]+/g, " ")       // _ o - -> espacio
-          .replace(/\s+/g, " ")         // espacios dobles
+      name.replace(/^.*[\\/]/, "")
+          .replace(/\.[^.]+$/, "")
+          .replace(/[_-]+/g, " ")
+          .replace(/\s+/g, " ")
           .trim()
-          .replace(/\b\w/g, c => c.toUpperCase()); // Capitaliza
+          .replace(/\b\w/g, c => c.toUpperCase());
 
     const items = list.map((it) => {
-      // Formato 1: string
       if (typeof it === "string") {
         const file = it.trim();
-        return {
-          src: `/Fotos_Noemi/${encodeURIComponent(file)}`,
-          caption: pretty(file),
-        };
+        return { src: `/Fotos_Noemi/${encodeURIComponent(file)}`, caption: pretty(file) };
       }
-      // Formato 2: objeto { src? | file?, caption? }
       if (it && typeof it === "object") {
         const fileOrSrc = it.src || it.file || "";
-        const src = fileOrSrc.startsWith("/")
-          ? fileOrSrc
-          : `/Fotos_Noemi/${encodeURIComponent(fileOrSrc)}`;
-        return {
-          src,
-          caption: it.caption ?? pretty(fileOrSrc),
-        };
+        const src = fileOrSrc.startsWith("/") ? fileOrSrc : `/Fotos_Noemi/${encodeURIComponent(fileOrSrc)}`;
+        return { src, caption: it.caption ?? pretty(fileOrSrc) };
       }
       return null;
-    });
+    }).filter(Boolean);
 
-    return items.filter(Boolean);
-  } catch { // Fallback por si falta fotos.json: usa nombres conocidos (ajústalo a lo que tengas)
+    log("JSON cargado:", items);
+    return items;
+  } catch (e) {
+    warn("Fallo fotos.json, uso fallback:", e);
     const fallback = ["Noemi_1.jpg","Noemi_2.jpg","Noemi_3.jpg","Noemi_4.jpg"];
-    return fallback.map(f => ({
+    const items = fallback.map(f => ({
       src: `/Fotos_Noemi/${encodeURIComponent(f)}`,
       caption: f.replace(/\.[^.]+$/, "").replace(/_/g," "),
     }));
+    log("Fallback:", items);
+    return items;
   }
 }
 
-  // Pintar miniaturas
+// 2) Valida que cada imagen realmente carga (descarta rotas)
+async function filterExistingPhotos(list) {
+  const checks = list.map(p => new Promise((resolve) => {
+    const img = new Image();
+    // cache-buster por si el SW insiste
+    const url = `${p.src}${p.src.includes("?") ? "&" : "?"}v=${Date.now()}`;
+    img.onload = () => resolve({ ok: true, src: url, caption: p.caption });
+    img.onerror = () => resolve({ ok: false, src: p.src, caption: p.caption });
+    img.src = url;
+  }));
+
+  const results = await Promise.all(checks);
+  const ok = results.filter(r => r.ok).map(r => ({ src: r.src, caption: r.caption }));
+  const bad = results.filter(r => !r.ok);
+
+  if (bad.length) warn("Imágenes que no cargaron:", bad);
+  if (!ok.length) warn("Ninguna imagen válida; se mostrará placeholder.");
+
+  return ok;
+}
+
+// 3) Construye la galería
+async function buildGallery() {
+  photos = await loadFromJson();
+  photos = await filterExistingPhotos(photos);
+
+  if (!photos.length) {
+    photos = [{ src: "/assets/placeholder.svg", caption: "Agrega tus fotos a /Fotos_Noemi" }];
+  }
+
+  // miniaturas
   if (thumbsEl) {
     thumbsEl.innerHTML = "";
     photos.forEach((p, idx) => {
@@ -200,27 +224,33 @@ async function loadFromJson() {
     });
   }
 
-  // Mostrar primera
   mount(0);
-
-  // Controles (una vez existen mount/current)
-  btnPrev?.addEventListener("click", () => mount(current - 1));
-  btnNext?.addEventListener("click", () => mount(current + 1));
-  addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft")  mount(current - 1);
-    if (e.key === "ArrowRight") mount(current + 1);
-  });
-
-// 3) Mostrar la foto seleccionada
-function mount(i) {
-  current = (i + photos.length) % photos.length;
-  const src = photos[current].src;
-  imgEl.src = `${src}${src.includes("?") ? "&" : "?"}v=${Date.now()}`; // bust cache
-  capEl.textContent = photos[current].caption;
-  [...thumbsEl.children].forEach((el, idx) => el.classList.toggle("active", idx === current));
 }
 
-// 4) Iniciar
+// 4) Mostrar una foto
+function mount(i) {
+  if (!photos.length) return;
+  current = (i + photos.length) % photos.length;
+
+  const p = photos[current];
+  imgEl.src = p.src; // ya viene con cache-buster desde filterExistingPhotos
+  imgEl.alt = "Foto de nuestros recuerdos";
+  capEl.textContent = p.caption || "";
+
+  // marca miniatura
+  if (thumbsEl) {
+    [...thumbsEl.children].forEach((el, idx) => el.classList.toggle("active", idx === current));
+  }
+}
+
+// 5) Navegación
+btnPrev?.addEventListener("click", () => mount(current - 1));
+btnNext?.addEventListener("click", () => mount(current + 1));
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft")  mount(current - 1);
+  if (e.key === "ArrowRight") mount(current + 1);
+});
+
 buildGallery();
 
 /* =========================================================
